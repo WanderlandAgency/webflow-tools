@@ -466,11 +466,11 @@ var DEFAULT_LINGUANA_SINGLE_OPTION_LABEL_CONTAINER_CLASS = getVariableValueOrDef
 );
 var DEFAULT_LINGUANA_SHOW_LANGUAGE_CODE = getVariableValueOrDefault(
   "LINGUANA_SHOW_LANGUAGE_CODE",
-  true
+  false
 );
 var DEFAULT_LINGUANA_SHOW_LANGUAGE_EMOJI = getVariableValueOrDefault(
   "LINGUANA_SHOW_LANGUAGE_EMOJI",
-  true
+  false
 );
 var DEFAULT_LINGUANA_SHOW_LANGUAGE_NAME = getVariableValueOrDefault(
   "LINGUANA_SHOW_LANGUAGE_NAME",
@@ -478,58 +478,48 @@ var DEFAULT_LINGUANA_SHOW_LANGUAGE_NAME = getVariableValueOrDefault(
 );
 
 const onLanguageSwitchClick = () => {
-  const languageOptionsContainer = document.getElementById(
+  const optionsContainer = document.getElementById(
     DEFAULT_LINGUANA_OPTIONS_CONTAINER_ID
   );
-
-  if (languageOptionsContainer.style.display === "flex") {
-    languageOptionsContainer.style.display = "none";
+  if (optionsContainer.style.display === "flex") {
+    optionsContainer.style.display = "none";
   } else {
-    languageOptionsContainer.style.display = "flex";
+    optionsContainer.style.display = "flex";
   }
-
-  document.addEventListener("click", (event) => {
-    if (!event.target.closest(`#${DEFAULT_LINGUANA_SWITCH_TOGGLE_BUTTON_ID}`)) {
-      languageOptionsContainer.style.display = "none";
-    }
-  });
 };
 
 const getLangByCode = (code) =>
-  linguanaLanguagesList.find((language) => language.code === code);
-
-var customSwitcher = false;
+  linguanaLanguagesList.find((lang) => lang.code === code);
 
 const getSelectedLanguage = () => {
   var selectedLanguageCode = DEFAULT_LINGUANA_MAIN_LANGUAGE_CODE;
-
   Object.keys(alternativeLanguagePages).some((page) => {
     if (
-      alternativeLanguagePages[page].trim("/") ===
-        (document.location.origin + document.location.pathname).trim("/") &&
+      alternativeLanguagePages[page].trim("/").toLowerCase() ===
+        (document.location.origin + document.location.pathname)
+          .trim("/")
+          .toLocaleLowerCase() &&
       page !== "default"
     ) {
       selectedLanguageCode = page;
+      return true;
     }
+    return false;
   });
 
-  return linguanaLanguagesList.find(
-    (language) => language.code === selectedLanguageCode
-  );
+  return linguanaLanguagesList.find((lang) => lang.code === selectedLanguageCode);
 };
 
-const getLanguageLabel = (language) => {
-  const selectedLanguage = language || getSelectedLanguage();
-
+const getLanguageLabel = (lang) => {
+  const language = lang || getSelectedLanguage();
   if (DEFAULT_LINGUANA_SHOW_LANGUAGE_CODE && DEFAULT_LINGUANA_SHOW_LANGUAGE_NAME) {
-    return `${selectedLanguage.name.toUpperCase()} (${selectedLanguage.code.toUpperCase()})`;
+    return `${language.name.toUpperCase()} (${language.code.toUpperCase()})`;
   } else if (DEFAULT_LINGUANA_SHOW_LANGUAGE_CODE) {
-    return `${selectedLanguage.code.toUpperCase()}`;
+    return `${language.code.toUpperCase()}`;
   } else if (DEFAULT_LINGUANA_SHOW_LANGUAGE_NAME) {
-    return `${selectedLanguage.name.toUpperCase()}`;
-  } else {
-    return "";
+    return `${language.name.toUpperCase()}`;
   }
+  return "";
 };
 
 const showLinguanaLanguageSwitcher = () => {
@@ -537,50 +527,70 @@ const showLinguanaLanguageSwitcher = () => {
     return;
   }
 
-  let languageSwitcherContainer;
+  let switcherContainer = document.getElementById(
+    DEFAULT_LINGUANA_SWITCH_CUSTOM_CONTAINER_ID
+  );
 
-  if (document.getElementById(DEFAULT_LINGUANA_SWITCH_CUSTOM_CONTAINER_ID)) {
-    customSwitcher = true;
-    languageSwitcherContainer = document.getElementById(
-      DEFAULT_LINGUANA_SWITCH_CUSTOM_CONTAINER_ID
-    );
-  } else {
-    languageSwitcherContainer = document.createElement("div");
-    languageSwitcherContainer.id = DEFAULT_LINGUANA_SWITCH_CUSTOM_CONTAINER_ID;
+  if (!switcherContainer) {
+    switcherContainer = document.createElement("div");
+    switcherContainer.id = DEFAULT_LINGUANA_SWITCH_CUSTOM_CONTAINER_ID;
   }
 
-  const languageToggleBtn = document.createElement("div");
-  languageToggleBtn.id = DEFAULT_LINGUANA_SWITCH_TOGGLE_BUTTON_ID;
+  const toggleButton = document.createElement("div");
+  toggleButton.id = DEFAULT_LINGUANA_SWITCH_TOGGLE_BUTTON_ID;
+  toggleButton.onclick = onLanguageSwitchClick;
 
-  if (!customSwitcher) {
-    languageToggleBtn.onclick = onLanguageSwitchClick;
-  }
+  if (!switcherContainer.firstChild) {
+    const selectedLanguage = getSelectedLanguage();
 
-  languageToggleBtn.innerHTML = DEFAULT_LINGUANA_SHOW_LANGUAGE_EMOJI
-    ? `<div class="${DEFAULT_LINGUANA_SINGLE_OPTION_FLAG_CONTAINER_CLASS}">${getSelectedLanguage().emoji}</div>`
-    : "";
-
-  if (getLanguageLabel()) {
-    languageToggleBtn.innerHTML +=
-      '\n    <div class="' +
-      DEFAULT_LINGUANA_SINGLE_OPTION_LABEL_CONTAINER_CLASS +
-      '">' +
-      getLanguageLabel() +
-      "</div>\n\n    ";
-  }
-
-  const languageOptionsContainer = document.createElement("div");
-  languageOptionsContainer.id = DEFAULT_LINGUANA_OPTIONS_CONTAINER_ID;
-  languageOptionsContainer.style.display = customSwitcher ? "flex" : "none";
-
-  Object.keys(alternativeLanguagePages).map((page) => {
-    const languageCode = page === "default" ? DEFAULT_LINGUANA_MAIN_LANGUAGE_CODE : page;
-    const language = getLangByCode(languageCode);
-
-    if (!language) {
-      return;
+    if (DEFAULT_LINGUANA_SHOW_LANGUAGE_EMOJI) {
+      const flagContainer = document.createElement("div");
+      flagContainer.className = DEFAULT_LINGUANA_SINGLE_OPTION_FLAG_CONTAINER_CLASS;
+      flagContainer.innerHTML = selectedLanguage.emoji;
+      toggleButton.appendChild(flagContainer);
     }
 
-    const languageOptionLink = document.createElement("a");
-    languageOptionLink.innerHTML = DEFAULT_LINGUANA_SHOW_LANGUAGE_EMOJI
-      ?
+    if (getLanguageLabel()) {
+      const labelContainer = document.createElement("div");
+      labelContainer.className = DEFAULT_LINGUANA_SINGLE_OPTION_LABEL_CONTAINER_CLASS;
+      labelContainer.innerHTML = getLanguageLabel();
+      toggleButton.appendChild(labelContainer);
+    }
+  }
+
+  const optionsContainer = document.createElement("div");
+  optionsContainer.id = DEFAULT_LINGUANA_OPTIONS_CONTAINER_ID;
+  optionsContainer.style.display = "none";
+
+  Object.keys(alternativeLanguagePages).forEach((page) => {
+    const languageCode = page === "default" ? DEFAULT_LINGUANA_MAIN_LANGUAGE_CODE : page;
+    const language = getLangByCode(languageCode);
+    if (!language) return;
+
+    const optionLink = document.createElement("a");
+    if (DEFAULT_LINGUANA_SHOW_LANGUAGE_EMOJI) {
+      const flagContainer = document.createElement("div");
+      flagContainer.className = DEFAULT_LINGUANA_SINGLE_OPTION_FLAG_CONTAINER_CLASS;
+      flagContainer.innerHTML = language.emoji;
+      optionLink.appendChild(flagContainer);
+    }
+    if (getLanguageLabel(language)) {
+      const labelContainer = document.createElement("div");
+      labelContainer.className = DEFAULT_LINGUANA_SINGLE_OPTION_LABEL_CONTAINER_CLASS;
+      labelContainer.innerHTML = getLanguageLabel(language);
+      optionLink.appendChild(labelContainer);
+    }
+    optionLink.href = alternativeLanguagePages[page];
+    optionLink.className = DEFAULT_LINGUANA_SINGLE_OPTION_CLASS;
+    optionsContainer.appendChild(optionLink);
+  });
+
+  switcherContainer.appendChild(toggleButton);
+  switcherContainer.appendChild(optionsContainer);
+
+  if (!document.getElementById(DEFAULT_LINGUANA_SWITCH_CUSTOM_CONTAINER_ID)) {
+    document.body.appendChild(switcherContainer);
+  }
+};
+
+showLinguanaLanguageSwitcher();
