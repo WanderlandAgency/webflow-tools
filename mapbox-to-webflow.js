@@ -127,7 +127,7 @@ function addMapPoints() {
     if ($(".store-locator__item.is-show").length) {
     $(".store-locator__item").removeClass("is-show");
   } 
-  	//find collection item by array ID and show it
+  	// Find collection item by array ID and show it
     $(".store-locator__item").eq(ID).addClass("is-show");
 	});
 
