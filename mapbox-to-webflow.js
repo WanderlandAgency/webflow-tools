@@ -1,18 +1,14 @@
 <script>
 //remove map wrapper
-$(".locations-map_wrapper").removeClass("is--show");
+$(".store-locator__collection").removeClass("is-show");
 
-
-//-----------MAPBOX SETUP CODE BELOW-----------
-
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!! REPLACE ACCESS TOKEN WITH YOURS HERE !!!
-mapboxgl.accessToken = "pk.eyJ1Ijoia2NrYXRjcmVhdGl2ZSIsImEiOiJjbDgzZTc4ZXUwM2NhM3BwY2k1a3dxbXgyIn0.zFz6wTLYXd72krGjtjF-3g";
+// Replace access token here
+mapboxgl.accessToken = "pk.eyJ1IjoiYXNwaXJlaW5mdXNpb25zIiwiYSI6ImNsbG1kaWsyYTI2ODgzanFqcnkydGg2dnIifQ.Jr30wdYz7q_R_8oiVeSAfw";
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-// create empty locations geojson object
+// Create empty locations geojson object
 let mapLocations = {
 	type: "FeatureCollection",
 	features: [],
@@ -23,9 +19,9 @@ let selectedMapLocations = [];
 // Initialize map and load in #map wrapper
 let map = new mapboxgl.Map({
 	container: "map",
-	style: "mapbox://styles/kckatcreative/clcdprcpm000814n0clb6knwm",
-	center: [-85.479, 35.861],
-	zoom: 6.59,
+	style: "mapbox://styles/aspireinfusions/cllmdk0ow01hu01p81uzo9a20",
+	center: [-79.978568, 43.705722],
+	zoom: 9.09,
 });
 
 // Adjust zoom of map for mobile and desktop
@@ -40,15 +36,15 @@ if (mq.matches) {
 map.addControl(new mapboxgl.NavigationControl());
 
 // Get cms items
-let listLocations = document.getElementById("location-list").childNodes;
+let listLocations = document.getElementById("location-data").childNodes;
 
-// For each colleciton item, grab hidden fields and convert to geojson proerty
+// For each collection item, grab hidden fields and convert to geojson property
 function getGeoData() {
 	listLocations.forEach(function (location, i) {
 		console.log(location);
 		let locationLat = location.querySelector("#locationLatitude").value;
 		let locationLong = location.querySelector("#locationLongitude").value;
-		let locationInfo = location.querySelector(".locations-map_card").innerHTML;
+		let locationInfo = location.querySelector(".store-locator__card-wrapper").innerHTML;
 		let coordinates = [locationLong, locationLat];
 		let locationID = location.querySelector("#locationID").value;
     //add array ID
@@ -77,7 +73,7 @@ function getGeoData() {
 // Invoke function
 getGeoData();
 
-// define mapping function to be invoked later
+// Define mapping function to be invoked later
 function addMapPoints() {
 	/* Add the data to your map as a layer */
 	map.addLayer({
@@ -89,18 +85,18 @@ function addMapPoints() {
 			data: mapLocations,
 		},
 		paint: {
-			"circle-radius": 8,
-			"circle-stroke-width": 1,
-			"circle-color": "#FF9900",
+			"circle-radius": 100%,
+			"circle-stroke-width": 0.25,
+			"circle-color": "#FFFFFF",
 			"circle-opacity": 1,
-			"circle-stroke-color": "#405F3B",
+			"circle-stroke-color": "#2d9dd5",
 		},
 	});
   
   
   
   
- // open a popup with the correct location 
+ // Open a popup with the correct location 
  function addPopup(e) {
 		// Copy coordinates array.
 		const coordinates = e.features[0].geometry.coordinates.slice();
@@ -124,15 +120,15 @@ function addMapPoints() {
     const ID = e.features[0].properties.arrayID;
  		//add popup 
      addPopup(e);
-    //show webflow Collection module
-    $(".locations-map_wrapper").addClass("is--show");
+    //show Webflow Collection module
+    $(".store-locator__collection").addClass("is-show");
     
     //Check if an item is currently there
-    if ($(".locations-map_item.is--show").length) {
-    $(".locations-map_item").removeClass("is--show");
+    if ($(".store-locator__item.is-show").length) {
+    $(".store-locator__item").removeClass("is-show");
   } 
   	//find collection item by array ID and show it
-    $(".locations-map_item").eq(ID).addClass("is--show");
+    $(".store-locator__item").eq(ID).addClass("is-show");
 	});
 
    
@@ -160,15 +156,15 @@ function addMapPoints() {
 }
 
 
-//When map is loaded initialize with data
+// When map is loaded initialize with data
 map.on("load", function (e) {
 	addMapPoints();
 });
 
 
-//close side nav with button
-$(".close-block").click(function(){
-	$(".locations-map_wrapper").removeClass("is--show");
+// Close side nav with button
+$(".store-locator__close-btn").click(function(){
+	$(".store-locator__collection").removeClass("is-show");
 });
 
 
