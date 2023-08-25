@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   const ageVerified = document.cookie.includes('ageVerified=true');
   if (ageVerified) {
-    ageGateModal.fadeOut(500);
+    ageGateModal.style.display = 'none';
     return;
   }
 
