@@ -41,12 +41,23 @@ document.addEventListener("DOMContentLoaded", function() {
     const currentDate = new Date();
     const age = currentDate.getFullYear() - birthDate.getFullYear();
 
-    if (age >= legalAge) {
-      ageGateModal.style.display = 'none';
+ if (age >= parseInt(legalAgeAttribute)) {
+      // Fade out effect
+      let opacity = 1;
+      const fadeOutInterval = setInterval(() => {
+        if (opacity <= 0) {
+          clearInterval(fadeOutInterval);
+          ageGateModal.style.display = 'none';
+        }
+        ageGateModal.style.opacity = opacity;
+        opacity -= 0.1;
+      }, 50);
+
       ageGateError.style.display = 'none';
+      
       if (rememberMeCheckbox && rememberMeCheckbox.checked) {
         const expiryDate = new Date();
-        expiryDate.setDate(expiryDate.getDate() + expiryDays);
+        expiryDate.setDate(expiryDate.getDate() + parseInt(expiryDateAttribute));
         document.cookie = `ageVerified=true; expires=${expiryDate.toUTCString()}; path=/`;
       }
     } else {
