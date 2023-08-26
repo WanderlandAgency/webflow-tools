@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const currentDate = new Date();
     const age = currentDate.getFullYear() - birthDate.getFullYear();
 
- if (age >= parseInt(legalAgeAttribute)) {
+    if (age >= legalAge) {
       // Fade out effect
       let opacity = 1;
       const fadeOutInterval = setInterval(() => {
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function() {
       
       if (rememberMeCheckbox && rememberMeCheckbox.checked) {
         const expiryDate = new Date();
-        expiryDate.setDate(expiryDate.getDate() + parseInt(expiryDateAttribute));
+        expiryDate.setDate(expiryDate.getDate() + expiryDays);
         document.cookie = `ageVerified=true; expires=${expiryDate.toUTCString()}; path=/`;
       }
     } else {
