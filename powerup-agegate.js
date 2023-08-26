@@ -42,19 +42,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const age = currentDate.getFullYear() - birthDate.getFullYear();
 
     if (age >= legalAge) {
-      // Fade out effect
-      let opacity = 1;
-      const fadeOutInterval = setInterval(() => {
-        if (opacity <= 0) {
-          clearInterval(fadeOutInterval);
-          ageGateModal.style.display = 'none';
-        }
-        ageGateModal.style.opacity = opacity;
-        opacity -= 0.1;
-      }, 50);
-
+      ageGateModal.style.display = 'none';
       ageGateError.style.display = 'none';
-      
       if (rememberMeCheckbox && rememberMeCheckbox.checked) {
         const expiryDate = new Date();
         expiryDate.setDate(expiryDate.getDate() + expiryDays);
