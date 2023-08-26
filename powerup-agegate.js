@@ -7,9 +7,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const expiryDays = parseInt(ageGateModal.getAttribute('wd-agegate-expirydate')) || 30;
   const legalAge = parseInt(ageGateModal.getAttribute('wd-agegate-age')) || 21;
 
-  // Fixed the attribute selector for the submit button
   const enterButton = document.querySelector('[wd-agegate-element="button"]');
-  
   const monthSelect = document.querySelector('[wd-agegate-element="month"]');
   const daySelect = document.querySelector('[wd-agegate-element="day"]');
   const yearSelect = document.querySelector('[wd-agegate-element="year"]');
@@ -21,7 +19,14 @@ document.addEventListener("DOMContentLoaded", function() {
   const ageVerified = document.cookie.includes('ageVerified=true');
   if (ageVerified) {
     ageGateModal.style.display = 'none';
+    document.body.style.opacity = '1';
     return;
+  } else {
+    // Set body opacity to 0 for 0.5 seconds
+    document.body.style.opacity = '0';
+    setTimeout(() => {
+      document.body.style.opacity = '1';
+    }, 500);
   }
 
   enterButton.addEventListener('click', function(event) {
@@ -42,8 +47,19 @@ document.addEventListener("DOMContentLoaded", function() {
     const age = currentDate.getFullYear() - birthDate.getFullYear();
 
     if (age >= legalAge) {
-      ageGateModal.style.display = 'none';
+      // Fade out effect
+      let opacity = 1;
+      const fadeOutInterval = setInterval(() => {
+        if (opacity <= 0) {
+          clearInterval(fadeOutInterval);
+          ageGateModal.style.display = 'none';
+        }
+        ageGateModal.style.opacity = opacity;
+        opacity -= 0.1;  // Decrease opacity by 0.1 every 25ms to achieve 250ms fade out
+      }, 25);
+
       ageGateError.style.display = 'none';
+      
       if (rememberMeCheckbox && rememberMeCheckbox.checked) {
         const expiryDate = new Date();
         expiryDate.setDate(expiryDate.getDate() + expiryDays);
