@@ -1,5 +1,10 @@
 document.addEventListener("DOMContentLoaded", function() {
 
+  // Fade in body
+  setTimeout(() => {
+    document.body.style.opacity = '1';
+  }, 500);
+
   const ageGateModal = document.querySelector('[wd-agegate-element="modal"]');
   const ageGateError = document.querySelector('[wd-agegate-element="error"]');
   
@@ -19,14 +24,10 @@ document.addEventListener("DOMContentLoaded", function() {
   const ageVerified = document.cookie.includes('ageVerified=true');
   if (ageVerified) {
     ageGateModal.style.display = 'none';
-    document.body.style.opacity = '1';
     return;
   } else {
-    // Set body opacity to 0 for 0.5 seconds
+    // Set body opacity to 0 initially
     document.body.style.opacity = '0';
-    setTimeout(() => {
-      document.body.style.opacity = '1';
-    }, 500);
   }
 
   enterButton.addEventListener('click', function(event) {
