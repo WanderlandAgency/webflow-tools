@@ -1,10 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
 
-  // Fade in body
-  setTimeout(() => {
-    document.body.style.opacity = '1';
-  }, 500);
-
   const ageGateModal = document.querySelector('[wd-agegate-element="modal"]');
   const ageGateError = document.querySelector('[wd-agegate-element="error"]');
   
@@ -18,16 +13,13 @@ document.addEventListener("DOMContentLoaded", function() {
   const yearSelect = document.querySelector('[wd-agegate-element="year"]');
   const rememberMeCheckbox = document.querySelector('[wd-agegate-remember="true"]');
   
-  // Explicitly set the modal to be visible initially
-  ageGateModal.style.display = 'block';
-
   const ageVerified = document.cookie.includes('ageVerified=true');
   if (ageVerified) {
     ageGateModal.style.display = 'none';
+    document.body.style.overflow = 'auto'; // Enable scroll
     return;
   } else {
-    // Set body opacity to 0 initially
-    document.body.style.opacity = '0';
+    document.body.style.overflow = 'hidden'; // Disable scroll
   }
 
   enterButton.addEventListener('click', function(event) {
@@ -48,12 +40,13 @@ document.addEventListener("DOMContentLoaded", function() {
     const age = currentDate.getFullYear() - birthDate.getFullYear();
 
     if (age >= legalAge) {
-      // Fade out effect
+      // Fade out effect for the modal
       let opacity = 1;
       const fadeOutInterval = setInterval(() => {
         if (opacity <= 0) {
           clearInterval(fadeOutInterval);
           ageGateModal.style.display = 'none';
+          document.body.style.overflow = 'auto'; // Enable scroll
         }
         ageGateModal.style.opacity = opacity;
         opacity -= 0.1;  // Decrease opacity by 0.1 every 25ms to achieve 250ms fade out
