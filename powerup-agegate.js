@@ -1,10 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
 
-  // Fade in body
-  setTimeout(() => {
-    document.body.style.opacity = '1';
-  }, 500);
-
   const ageGateModal = document.querySelector('[wd-agegate-element="modal"]');
   const ageGateError = document.querySelector('[wd-agegate-element="error"]');
   
@@ -12,7 +7,9 @@ document.addEventListener("DOMContentLoaded", function() {
   const expiryDays = parseInt(ageGateModal.getAttribute('wd-agegate-expirydate')) || 30;
   const legalAge = parseInt(ageGateModal.getAttribute('wd-agegate-age')) || 21;
 
+  // Fixed the attribute selector for the submit button
   const enterButton = document.querySelector('[wd-agegate-element="button"]');
+  
   const monthSelect = document.querySelector('[wd-agegate-element="month"]');
   const daySelect = document.querySelector('[wd-agegate-element="day"]');
   const yearSelect = document.querySelector('[wd-agegate-element="year"]');
@@ -25,9 +22,6 @@ document.addEventListener("DOMContentLoaded", function() {
   if (ageVerified) {
     ageGateModal.style.display = 'none';
     return;
-  } else {
-    // Set body opacity to 0 initially
-    document.body.style.opacity = '0';
   }
 
   enterButton.addEventListener('click', function(event) {
