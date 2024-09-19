@@ -1,20 +1,49 @@
 document.addEventListener('DOMContentLoaded', function () {
     const popup = document.querySelector('[wd-popup-element="popup"]');
     const closeButton = document.querySelectorAll('[wd-popup-element="trigger-close"]');
-    const animationType = popup.getAttribute('wd-popup-animation') || 'slide-left'; // Default to slide-left if not set
-    const animationDuration = parseInt(popup.getAttribute('wd-popup-duration')) || 200; // Default to 200ms if not set
-    const cookieExpiry = parseInt(popup.getAttribute('wd-popup-expirydate')) || 30; // Default to 30 days if not set
+    const showTime = parseInt(popup.getAttribute('wd-popup-show-time')) * 1000 || 10000; // Default to 10 seconds
+    const animationType = popup.getAttribute('wd-popup-animation') || 'slide-left';
+    const animationDuration = parseInt(popup.getAttribute('wd-popup-duration')) || 200;
+    const cookieExpiry = parseInt(popup.getAttribute('wd-popup-expirydate')) || 1; // Default to 1 day
 
-    // Define basic animations
     const animations = {
-        'fade': { 'opacity': '0', 'visibility': 'hidden' },
-        'slide-left': { 'transform': 'translateX(-100%)', 'opacity': '0', 'visibility': 'hidden' },
-        'slide-right': { 'transform': 'translateX(100%)', 'opacity': '0', 'visibility': 'hidden' },
-        'slide-up': { 'transform': 'translateY(-100%)', 'opacity': '0', 'visibility': 'hidden' },
-        'slide-down': { 'transform': 'translateY(100%)', 'opacity': '0', 'visibility': 'hidden' }
+        'fade': {
+            initial: { 'opacity': '0', 'visibility': 'hidden' },
+            show: { 'opacity': '1', 'visibility': 'visible' },
+            hide: { 'opacity': '0', 'visibility': 'hidden' }
+        },
+        'slide-left': {
+            initial: { 'transform': 'translateX(-100%)', 'opacity': '0', 'visibility': 'hidden' },
+            show: { 'transform': 'translateX(0)', 'opacity': '1', 'visibility': 'visible' },
+            hide: { 'transform': 'translateX(-100%)', 'opacity': '0', 'visibility': 'hidden' }
+        },
+        'slide-right': {
+            initial: { 'transform': 'translateX(100%)', 'opacity': '0', 'visibility': 'hidden' },
+            show: { 'transform': 'translateX(0)', 'opacity': '1', 'visibility': 'visible' },
+            hide: { 'transform': 'translateX(100%)', 'opacity': '0', 'visibility': 'hidden' }
+        },
+        'slide-up': {
+            initial: { 'transform': 'translateY(100%)', 'opacity': '0', 'visibility': 'hidden' },
+            show: { 'transform': 'translateY(0)', 'opacity': '1', 'visibility': 'visible' },
+            hide: { 'transform': 'translateY(100%)', 'opacity': '0', 'visibility': 'hidden' }
+        },
+        'slide-down': {
+            initial: { 'transform': 'translateY(-100%)', 'opacity': '0', 'visibility': 'hidden' },
+            show: { 'transform': 'translateY(0)', 'opacity': '1', 'visibility': 'visible' },
+            hide: { 'transform': 'translateY(-100%)', 'opacity': '0', 'visibility': 'hidden' }
+        }
     };
 
-    // Function to get the value of a cookie by name
+    // Set initial style for popup
+    function setInitialStyle() {
+        popup.style.display = 'block'; // Block needs to be set before transform for transition to take effect
+        Object.assign(popup.style, animations[animationType].initial);
+        setTimeout(() => {
+            popup.style.transition = `all ${animationDuration}ms`;
+            showPopup();
+        }, 10); // Delay to ensure transition applies
+    }
+
     function getCookie(name) {
         let matches = document.cookie.match(new RegExp(
             "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
@@ -22,43 +51,30 @@ document.addEventListener('DOMContentLoaded', function () {
         return matches ? decodeURIComponent(matches[1]) : undefined;
     }
 
-    // Function to check if the cookie is set
-    function checkPopupCookie() {
-        return getCookie('myPopupCookie') === 'hidden';
+    function setCookie(name, value, days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        const expires = "expires=" + date.toUTCString();
+        document.cookie = name + "=" + value + ";" + expires + ";path=/";
     }
 
-    // Function to apply animation styles
-    function applyAnimation(element, animation) {
-        Object.assign(element.style, animations[animation]);
-        element.style.transition = `all ${animationDuration}ms`;
+    function showPopup() {
+        if (getCookie('myPopupCookie') !== 'shown') {
+            Object.assign(popup.style, animations[animationType].show);
+            setCookie('myPopupCookie', 'shown', cookieExpiry);
+        }
     }
 
-    // Function to hide popup with selected animation
     function hidePopup() {
-        applyAnimation(popup, animationType);
+        Object.assign(popup.style, animations[animationType].hide);
         setTimeout(() => {
             popup.style.display = 'none';
         }, animationDuration);
-        setPopupCookie();
     }
 
-    // Function to set cookie
-    function setPopupCookie() {
-        const date = new Date();
-        date.setTime(date.getTime() + (cookieExpiry * 24 * 60 * 60 * 1000));
-        const expires = "expires=" + date.toUTCString();
-        document.cookie = "myPopupCookie=hidden;" + expires + ";path=/";
-    }
+    closeButton.forEach(btn => {
+        btn.addEventListener('click', hidePopup);
+    });
 
-    // If the cookie is not set, display the popup
-    if (!checkPopupCookie()) {
-        popup.style.display = 'block';
-
-        // Close button event listener
-        closeButton.forEach(btn => {
-            btn.addEventListener('click', function () {
-                hidePopup();
-            });
-        });
-    }
+    setTimeout(setInitialStyle, showTime);
 });
