@@ -34,13 +34,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
+    // Set initial style for popup
     function setInitialStyle() {
-        popup.style.display = 'block';
+        popup.style.display = 'block'; // Block needs to be set before transform for transition to take effect
         Object.assign(popup.style, animations[animationType].initial);
         setTimeout(() => {
             popup.style.transition = `all ${animationDuration}ms`;
             showPopup();
-        }, 10);
+        }, 10); // Delay to ensure transition applies
     }
 
     function getCookie(name) {
@@ -65,25 +66,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function hidePopup() {
-        Object.assign(popup.style, animations['fade'].hide);
+        Object.assign(popup.style, animations[animationType].hide);
         setTimeout(() => {
             popup.style.display = 'none';
-        }, 200); // Fade out over 200ms
+        }, animationDuration);
     }
 
     closeButton.forEach(btn => {
         btn.addEventListener('click', hidePopup);
     });
-
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (document.querySelector('.submitted-message')) {
-                hidePopup();
-            }
-        });
-    });
-
-    observer.observe(document.body, { childList: true, subtree: true });
 
     setTimeout(setInitialStyle, showTime);
 });
